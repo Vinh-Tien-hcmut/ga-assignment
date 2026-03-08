@@ -7,11 +7,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from fp_ga import (
-    generate_genome,
+    generate_chromosome,
     generate_inventory,
     generate_population,
-    fitness_function_OneMax,
-    fitness_function_Knapsack,
+    fitness_function_onemax,
+    fitness_function_knapsack,
     select_parent,
     crossover_function,
     mutation,
@@ -37,23 +37,23 @@ SMALL_ITEMS = (
     Item("C", value=3,  weight=3),
 )
 SMALL_CAPACITY = 8
-small_fit = fitness_function_Knapsack(SMALL_ITEMS, SMALL_CAPACITY)
+small_fit = fitness_function_knapsack(SMALL_ITEMS, SMALL_CAPACITY)
 
 
 # ==============================
 # 1. Fitness - OneMax (4 tests)
 # ==============================
 def test_onemax_all_ones():
-    assert fitness_function_OneMax((1,) * 5) == 5
+    assert fitness_function_onemax((1,) * 5) == 5
 
 def test_onemax_all_zeros():
-    assert fitness_function_OneMax((0,) * 5) == 0
+    assert fitness_function_onemax((0,) * 5) == 0
 
 def test_onemax_mixed():
-    assert fitness_function_OneMax((1, 0, 1, 0, 1)) == 3
+    assert fitness_function_onemax((1, 0, 1, 0, 1)) == 3
 
 def test_onemax_single_one():
-    assert fitness_function_OneMax((0, 0, 1, 0, 0)) == 1
+    assert fitness_function_onemax((0, 0, 1, 0, 0)) == 1
 
 
 # ==============================
@@ -103,7 +103,7 @@ def test_knapsack_empty_genome_always_zero():
     for seed in SEEDS_100:
         rng = random.Random(seed)
         inventory, capacity = generate_inventory(GENOME_LENGTH, rng)
-        fit = fitness_function_Knapsack(inventory, capacity)
+        fit = fitness_function_knapsack(inventory, capacity)
         assert fit((0,) * GENOME_LENGTH) == 0
 
 def test_knapsack_fitness_non_negative():
@@ -111,7 +111,7 @@ def test_knapsack_fitness_non_negative():
     for seed in SEEDS_100:
         rng = random.Random(seed)
         inventory, capacity = generate_inventory(GENOME_LENGTH, rng)
-        fit = fitness_function_Knapsack(inventory, capacity)
+        fit = fitness_function_knapsack(inventory, capacity)
         assert fit((1,) * GENOME_LENGTH) >= 0
 
 def test_knapsack_single_item_always_valid():
@@ -119,7 +119,7 @@ def test_knapsack_single_item_always_valid():
     for seed in SEEDS_100:
         rng = random.Random(seed)
         inventory, capacity = generate_inventory(GENOME_LENGTH, rng)
-        fit = fitness_function_Knapsack(inventory, capacity)
+        fit = fitness_function_knapsack(inventory, capacity)
         lightest_idx = min(range(GENOME_LENGTH), key=lambda i: inventory[i].weight)
         genome = tuple(1 if i == lightest_idx else 0 for i in range(GENOME_LENGTH))
         assert fit(genome) == inventory[lightest_idx].value
@@ -139,7 +139,7 @@ def test_knapsack_capacity_scales_with_total_weight():
 def test_select_parent_returns_valid_genome():
     rng_sel = random.Random(1)
     population = generate_population(10, 5, rng_sel)
-    parent = select_parent(population, fitness_function_OneMax, rng_sel)
+    parent = select_parent(population, fitness_function_onemax, rng_sel)
     assert parent in population
 
 def test_select_parent_prefers_higher_fitness():
@@ -150,7 +150,7 @@ def test_select_parent_prefers_higher_fitness():
     population = (best,) * 50 + (worst,) * 50
     wins = sum(
         1 for _ in range(200)
-        if select_parent(population, fitness_function_OneMax, rng_sel) == best
+        if select_parent(population, fitness_function_onemax, rng_sel) == best
     )
     assert wins > 100
 
@@ -159,7 +159,7 @@ def test_select_parent_never_returns_outside_population():
     for seed in SEEDS_100:
         rng_sel = random.Random(seed)
         population = generate_population(20, GENOME_LENGTH, rng_sel)
-        parent = select_parent(population, fitness_function_OneMax, rng_sel)
+        parent = select_parent(population, fitness_function_onemax, rng_sel)
         assert parent in population
 
 
@@ -229,21 +229,21 @@ def test_mutation_flips_all_bits_at_max_rate():
 def test_onemax_fitness_improves():
     rng_ga = random.Random(SEED)
     _, _, history, _ = genetic_algorithm(
-        fitness_function_OneMax, rng_ga, target_fitness=GENOME_LENGTH
+        fitness_function_onemax, rng_ga, target_fitness=GENOME_LENGTH, verbose=False
     )
     assert history[-1] > history[0]
 
 def test_onemax_converges_to_optimal():
     rng_ga = random.Random(SEED)
     _, best_fitness, _, _ = genetic_algorithm(
-        fitness_function_OneMax, rng_ga, target_fitness=GENOME_LENGTH
+        fitness_function_onemax, rng_ga, target_fitness=GENOME_LENGTH, verbose=False
     )
     assert best_fitness == GENOME_LENGTH
 
 def test_onemax_history_is_non_decreasing():
     rng_ga = random.Random(SEED)
     _, _, history, _ = genetic_algorithm(
-        fitness_function_OneMax, rng_ga, target_fitness=GENOME_LENGTH
+        fitness_function_onemax, rng_ga, target_fitness=GENOME_LENGTH, verbose=False
     )
     # Best fitness must never drop between generations due to elitism
     assert all(history[i] <= history[i + 1] for i in range(len(history) - 1))
@@ -256,18 +256,18 @@ def test_knapsack_fitness_improves_10_instances():
     for seed in SEEDS_10:
         rng_inv = random.Random(seed)
         inventory, capacity = generate_inventory(GENOME_LENGTH, rng_inv)
-        knapsack_fitness = fitness_function_Knapsack(inventory, capacity)
+        knapsack_fitness = fitness_function_knapsack(inventory, capacity)
         rng_ga = random.Random(seed)
-        _, _, history, _ = genetic_algorithm(knapsack_fitness, rng_ga)
+        _, _, history, _ = genetic_algorithm(knapsack_fitness, rng_ga, verbose=False)
         assert history[-1] >= history[0], f"Fitness did not improve for seed={seed}"
 
 def test_knapsack_solution_respects_capacity_10_instances():
     for seed in SEEDS_10:
         rng_inv = random.Random(seed)
         inventory, capacity = generate_inventory(GENOME_LENGTH, rng_inv)
-        knapsack_fitness = fitness_function_Knapsack(inventory, capacity)
+        knapsack_fitness = fitness_function_knapsack(inventory, capacity)
         rng_ga = random.Random(seed)
-        _, _, _, best_genome = genetic_algorithm(knapsack_fitness, rng_ga)
+        _, _, _, best_genome = genetic_algorithm(knapsack_fitness, rng_ga, verbose=False)
         total_weight = reduce(
             lambda acc, pair: acc + pair[1].weight * pair[0],
             zip(best_genome, inventory),
@@ -275,11 +275,21 @@ def test_knapsack_solution_respects_capacity_10_instances():
         )
         assert total_weight <= capacity, f"Capacity exceeded for seed={seed}"
 
-
 # ==============================
 # Runner
 # ==============================
 if __name__ == "__main__":
+    import sys
+    import os
+    os.system("")  # enable ANSI on Windows
+
+    GREEN  = "\033[92m"
+    RED    = "\033[91m"
+    YELLOW = "\033[93m"
+    CYAN   = "\033[96m"
+    BOLD   = "\033[1m"
+    RESET  = "\033[0m"
+
     test_groups = {
         "Fitness - OneMax": [
             test_onemax_all_ones,
@@ -331,25 +341,51 @@ if __name__ == "__main__":
         ],
     }
 
-    total_passed = 0
-    total_failed = 0
-
-    for group, tests in test_groups.items():
-        print(f"\n{f' {group} ':=^50}")
-        g_passed = 0
-        g_failed = 0
-        for test in tests:
+    if len(sys.argv) > 1:
+        test_name = sys.argv[1]
+        all_tests = {
+            test.__name__: test
+            for tests in test_groups.values()
+            for test in tests
+        }
+        if test_name in all_tests:
             try:
-                test()
-                print(f"  PASSED: {test.__name__}")
-                g_passed += 1
+                all_tests[test_name]()
+                print(f"  {GREEN}PASSED{RESET}: {test_name}")
             except Exception as e:
-                print(f"  FAILED: {test.__name__}: {e}")
-                g_failed += 1
-        print(f"  {g_passed}/{g_passed + g_failed} passed")
-        total_passed += g_passed
-        total_failed += g_failed
+                print(f"  {RED}FAILED{RESET}: {test_name}: {e}")
+        else:
+            print(f"{RED}Test '{test_name}' not found.{RESET}")
+            print("Available tests:")
+            for name in all_tests:
+                print(f"  {name}")
 
-    print(f"\n{'=' * 50}")
-    print(f"  Total: {total_passed}/{total_passed + total_failed} passed")
-    print(f"{'=' * 50}")
+    else:
+        total_passed = 0
+        total_failed = 0
+
+        for group, tests in test_groups.items():
+            print(f"\n{CYAN}{f' {group} ':=^50}{RESET}")  # header
+            g_passed = 0
+            g_failed = 0
+
+            for test in tests:
+                try:
+                    test()
+                    print(f"  {GREEN}PASSED{RESET}: {test.__name__}")
+                    g_passed += 1
+                except Exception as e:
+                    print(f"  {RED}FAILED{RESET}: {test.__name__}: {e}")
+                    g_failed += 1
+
+            print(f"  {g_passed}/{g_passed + g_failed} passed")
+            total_passed += g_passed
+            total_failed += g_failed
+
+        # Final summary
+        print(f"\n{BOLD}{'=' * 50}{RESET}")
+        if total_failed == 0:
+            print(f"  {GREEN}{BOLD}Total: {total_passed}/{total_passed + total_failed} passed{RESET}")
+        else:
+            print(f"  {YELLOW}{BOLD}Total: {total_passed}/{total_passed + total_failed} passed{RESET}")
+        print(f"{BOLD}{'=' * 50}{RESET}")
