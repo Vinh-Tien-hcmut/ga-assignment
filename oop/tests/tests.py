@@ -42,14 +42,14 @@ onemax_ff   = OneMaxFitness()
 knapsack_ff = KnapsackFitness(SMALL_ITEMS, SMALL_CAPACITY)
 
 
-def _make_ga(fitness_fn, rng, target=None):
+def _make_ga(fitness_function, rng, target=None):
     return GeneticAlgorithm(
-        fitness_fn     = fitness_fn,
+        fitness_function    = fitness_function,
         selection      = TournamentSelection(k=TOURNAMENT_K, rng=rng),
-        crossover      = OnePointCrossover(rate=CROSSOVER_RATE, rng=rng),
-        mutation       = BitFlipMutation(rate=MUTATION_RATE, rng=rng),
+        crossover      = OnePointCrossover(crossover_rate=CROSSOVER_RATE, rng=rng),
+        mutation       = BitFlipMutation(mutation_rate=MUTATION_RATE, rng=rng),
         rng            = rng,
-        tarfitness = target,
+        target_fitness = target,
         verbose = False
     )
 
@@ -207,7 +207,7 @@ def test_tournament_never_returns_outside_population():
 # ==============================
 def test_crossover_offspring_correct_length():
     rng = random.Random(0)
-    cx  = OnePointCrossover(rate=1.0, rng=rng)
+    cx  = OnePointCrossover(crossover_rate=1.0, rng=rng)
     p1  = Chromosome([1] * 10)
     p2  = Chromosome([0] * 10)
     o1, o2 = cx.crossover(p1, p2)
@@ -215,16 +215,16 @@ def test_crossover_offspring_correct_length():
 
 def test_crossover_bits_are_valid():
     rng = random.Random(0)
-    cx  = OnePointCrossover(rate=1.0, rng=rng)
+    cx  = OnePointCrossover(crossover_rate=1.0, rng=rng)
     p1  = Chromosome([1] * 10)
     p2  = Chromosome([0] * 10)
     o1, o2 = cx.crossover(p1, p2)
     assert all(b in (0, 1) for b in o1.genome + o2.genome)
 
 def test_crossover_skipped_returns_copies():
-    # rate=0.0 — crossover never happens, offspring are copies of parents
+    # mutation_rate=0.0 — crossover never happens, offspring are copies of parents
     rng = random.Random(0)
-    cx  = OnePointCrossover(rate=0.0, rng=rng)
+    cx  = OnePointCrossover(crossover_rate=0.0, rng=rng)
     p1  = Chromosome([1, 0, 1, 0, 1])
     p2  = Chromosome([0, 1, 0, 1, 0])
     o1, o2 = cx.crossover(p1, p2)
@@ -232,7 +232,7 @@ def test_crossover_skipped_returns_copies():
 
 def test_crossover_produces_recombination():
     rng     = random.Random(5)
-    cx      = OnePointCrossover(rate=1.0, rng=rng)
+    cx      = OnePointCrossover(crossover_rate=1.0, rng=rng)
     p1      = Chromosome([1] * 10)
     p2      = Chromosome([0] * 10)
     results = [cx.crossover(p1, p2) for _ in range(20)]
@@ -245,26 +245,26 @@ def test_crossover_produces_recombination():
 # ==============================
 def test_mutation_preserves_length():
     rng = random.Random(0)
-    mut = BitFlipMutation(rate=MUTATION_RATE, rng=rng)
+    mut = BitFlipMutation(mutation_rate=MUTATION_RATE, rng=rng)
     c   = Chromosome([1, 0] * 5)
     assert len(mut.mutate(c).genome) == 10
 
 def test_mutation_bits_are_valid():
     rng = random.Random(0)
-    mut = BitFlipMutation(rate=MUTATION_RATE, rng=rng)
+    mut = BitFlipMutation(mutation_rate=MUTATION_RATE, rng=rng)
     c   = Chromosome([1] * 20)
     assert all(b in (0, 1) for b in mut.mutate(c).genome)
 
 def test_mutation_returns_new_chromosome():
     rng = random.Random(0)
-    mut = BitFlipMutation(rate=MUTATION_RATE, rng=rng)
+    mut = BitFlipMutation(mutation_rate=MUTATION_RATE, rng=rng)
     c   = Chromosome([1] * 10)
     assert mut.mutate(c) is not c   # must be a new object
 
 def test_mutation_rate_one_flips_all():
-    # At rate=1.0 every bit must flip
+    # At mutation_rate=1.0 every bit must flip
     rng = random.Random(0)
-    mut = BitFlipMutation(rate=1.0, rng=rng)
+    mut = BitFlipMutation(mutation_rate=1.0, rng=rng)
     c   = Chromosome([1, 0, 1, 0, 1])
     assert mut.mutate(c).genome == [0, 1, 0, 1, 0]
 
