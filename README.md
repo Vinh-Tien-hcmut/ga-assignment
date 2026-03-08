@@ -72,7 +72,7 @@ The FP implementation follows pure functional programming principles throughout:
 - **Immutable data** - chromosomes and populations are represented as Python `tuple`s; no in-place mutation anywhere
 - **Pure functions** - every function takes all required state as parameters and returns a new value without side effects. The global `rng` was moved into `main()` and passed explicitly down the call chain
 - **Higher-order functions** - `map`, `filter`, and `reduce` are used in place of imperative loops for chromosome generation, fitness evaluation, elitism selection, and mutation
-- **Factory pattern for fitness** - `fitness_function_knapsack(inventory, capacity)` returns a closure `Chromosome -> int`, keeping the same interface as `fitness_function_oneMax` so `genetic_algorithm` does not need to know which problem it is solving
+- **Factory pattern for fitness** - `fitness_function_knapsack(inventory, capacity)` returns a closure `Chromosome -> int`, keeping the same interface as `fitness_function_onemax` so `genetic_algorithm` does not need to know which problem it is solving
 
 The `genetic_algorithm` function accepts any `FitnessFunction` and an optional `target_fitness` for early termination, making it fully reusable across problems.
 
