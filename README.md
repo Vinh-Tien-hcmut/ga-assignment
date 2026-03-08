@@ -69,10 +69,10 @@ State is fully encapsulated inside each class. Swapping a strategy (e.g. replaci
 The FP implementation follows pure functional programming principles throughout:
 
 - **No classes** - all logic is expressed as standalone functions
-- **Immutable data** - genomes and populations are represented as Python `tuple`s; no in-place mutation anywhere
+- **Immutable data** - chromosomes and populations are represented as Python `tuple`s; no in-place mutation anywhere
 - **Pure functions** - every function takes all required state as parameters and returns a new value without side effects. The global `rng` was moved into `main()` and passed explicitly down the call chain
-- **Higher-order functions** - `map`, `filter`, and `reduce` are used in place of imperative loops for genome generation, fitness evaluation, elitism selection, and mutation
-- **Factory pattern for fitness** - `fitness_function_knapsack(inventory, capacity)` returns a closure `Genome -> int`, keeping the same interface as `fitness_function_oneMax` so `genetic_algorithm` does not need to know which problem it is solving
+- **Higher-order functions** - `map`, `filter`, and `reduce` are used in place of imperative loops for chromosome generation, fitness evaluation, elitism selection, and mutation
+- **Factory pattern for fitness** - `fitness_function_knapsack(inventory, capacity)` returns a closure `Chromosome -> int`, keeping the same interface as `fitness_function_oneMax` so `genetic_algorithm` does not need to know which problem it is solving
 
 The `genetic_algorithm` function accepts any `FitnessFunction` and an optional `target_fitness` for early termination, making it fully reusable across problems.
 
@@ -84,6 +84,6 @@ Both implementations solve the same problems using the same parameters and produ
 
 The OOP approach made the code easy to navigate. Each class has a single job, and the use of abstract base classes enforced a consistent interface across strategies. Adding a new selection method or a new problem is straightforward - just write a new subclass. The downside is boilerplate: even simple logic requires a class definition, `__init__`, and method signatures, which can feel heavyweight for a problem of this scale.
 
-The FP approach was more concise. Representing genomes as tuples and relying on `map`/`reduce` kept individual functions short and easy to reason about in isolation. Because nothing is mutated in place, bugs related to shared state simply cannot happen. The tradeoff is that threading `rng` through every function signature adds noise, and deeply nested `reduce` lambdas can become hard to read quickly.
+The FP approach was more concise. Representing chromosomes as tuples and relying on `map`/`reduce` kept individual functions short and easy to reason about in isolation. Because nothing is mutated in place, bugs related to shared state simply cannot happen. The tradeoff is that threading `rng` through every function signature adds noise, and deeply nested `reduce` lambdas can become hard to read quickly.
 
 In terms of correctness, both paradigms performed equally well - the GA converged reliably on OneMax and produced valid, high-value solutions for Knapsack. For a project like this, where the algorithm is fixed and the components are well-defined, OOP offers better long-term maintainability while FP offers better testability and fewer hidden dependencies. A hybrid approach - using dataclasses for structured data and pure functions for logic - would likely combine the best of both worlds.
