@@ -15,13 +15,13 @@ with open(report_dir / "results_oop.json") as f:
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 fig.suptitle("Genetic Algorithm - OneMax", fontsize=14)
 
-ax1.plot(fp["OneMax"]["history"])
-ax1.set_title("FP")
+ax1.plot(oop["OneMax"]["history"])
+ax1.set_title("OOP")
 ax1.set_xlabel("Generation")
 ax1.set_ylabel("Best Fitness")
 
-ax2.plot(oop["OneMax"]["history"])
-ax2.set_title("OOP")
+ax2.plot(fp["OneMax"]["history"])
+ax2.set_title("FP")
 ax2.set_xlabel("Generation")
 ax2.set_ylabel("Best Fitness")
 
@@ -35,13 +35,13 @@ plt.close()
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 fig.suptitle("Genetic Algorithm - Knapsack", fontsize=14)
 
-ax1.plot(fp["Knapsack"]["history"])
-ax1.set_title("FP")
+ax1.plot(oop["Knapsack"]["history"])
+ax1.set_title("OOP")
 ax1.set_xlabel("Generation")
 ax1.set_ylabel("Best Fitness")
 
-ax2.plot(oop["Knapsack"]["history"])
-ax2.set_title("OOP")
+ax2.plot(fp["Knapsack"]["history"])
+ax2.set_title("FP")
 ax2.set_xlabel("Generation")
 ax2.set_ylabel("Best Fitness")
 
