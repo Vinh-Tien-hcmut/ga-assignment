@@ -42,11 +42,15 @@ python fp/tests/tests.py <test_name>
 ```
 
 Both versions will generate output files under `reports/`:
-- `onemax_curve.png` - fitness evolution plot for OneMax
-- `knapsack_curve.png` - fitness evolution plot for Knapsack
-- `results_oop.json` - results from OOP version
-- `results_fp.json` - results from FP version
+- `results_oop.json` — results from OOP version
+- `results_fp.json` — results from FP version
+- `onemax_curve.png` — fitness evolution plot for OneMax (FP vs OOP)
+- `knapsack_curve.png` — fitness evolution plot for Knapsack (FP vs OOP)
 
+To generate the combined comparison plots, run both versions first, then run
+```bash 
+python reports/generate_reports.py
+```
 ---
 
 ## 2. Design Explanation
