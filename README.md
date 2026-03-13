@@ -1,5 +1,10 @@
 # Genetic Algorithm - OOP vs Functional Programming
 
+## Results
+
+![OneMax](reports/onemax_curve.png)
+![Knapsack](reports/knapsack_curve.png)
+
 **Name:** Luong Hoang Vinh Tien  
 **Student ID:** 2413477
 
@@ -15,6 +20,23 @@ Please do not copy or submit this code as part of academic coursework
 or assignments.
 
 ---
+
+## Genetic Algorithm Configuration
+
+The assignment specifies the following GA parameters:
+
+| Parameter | Value |
+|----------|------|
+| Representation | Bitstring |
+| Population size | 100 |
+| Selection | Tournament (k = 3) |
+| Crossover | One-point crossover (p = 0.9) |
+| Mutation | Bit-flip mutation (p = 1/L per bit) |
+| Replacement | Generational with elitism (e = 2) |
+| Termination | 300 generations |
+| Random seed | 42 |
+
+Both the OOP and FP implementations use the same configuration to ensure fair comparison. These parameters are defined in the course assignment and are kept identical for both implementations.
 
 ## 1. Instructions to Run
 
@@ -115,6 +137,47 @@ The FP approach was more concise. Representing chromosomes as tuples and relying
 In terms of correctness, both paradigms performed equally well - the GA converged reliably on OneMax and produced valid, high-value solutions for Knapsack. For a project like this, where the algorithm is fixed and the components are well-defined, OOP offers better long-term maintainability while FP offers better testability and fewer hidden dependencies. A hybrid approach - using dataclasses for structured data and pure functions for logic - would likely combine the best of both worlds.
 
 ---
+
+## Project Structure
+
+ga-assignment/
+│
+├── README.md
+├── LICENSE
+│
+├── fp/
+│   ├── src/
+│   │   ├── fp_ga.py
+│   │   
+│   │   
+│   │   
+│   │
+│   ├── tests/
+│   │   ├── tests.py
+│   │   
+│   │   
+│   │
+│   └── run.py
+│
+├── oop/
+│   ├── src/
+│   │   ├── oop_ga.py
+│   │   
+│   │   
+│   │   
+│   │
+│   ├── tests/
+│   │   ├── tests.py
+│   │   
+│   │   
+│   │
+│   └── run.py
+│
+└── reports/
+    ├── onemax_curve.png
+    ├── knapsack_curve.png
+    ├── results_oop.json
+    └── results_fp.json
 
 ## Acknowledgments
 
