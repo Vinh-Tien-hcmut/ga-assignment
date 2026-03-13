@@ -126,4 +126,5 @@ refactoring suggestions, and code improvement.
 
 The final implementation, structure, and modifications were written
 and adapted by the author.
+
 © 2026 Luong Hoang Vinh Tien
