@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Luong Hoang Vinh Tien
+# All rights reserved.
 import random
 import time
 from abc import ABC, abstractmethod

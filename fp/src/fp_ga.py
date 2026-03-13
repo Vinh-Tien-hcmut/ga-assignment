@@ -1,3 +1,5 @@
+# Copyright (c) 2026 Luong Hoang Vinh Tien
+# All rights reserved.
 import random
 from typing import Tuple, Callable
 from functools import reduce

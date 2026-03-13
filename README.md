@@ -5,6 +5,17 @@
 
 ---
 
+## Repository Purpose
+
+This repository is published publicly to receive feedback from the
+programming community and to improve the implementation.
+
+The code is shared for **learning, discussion, and code review purposes**.
+Please do not copy or submit this code as part of academic coursework
+or assignments.
+
+---
+
 ## 1. Instructions to Run
 
 Make sure you have Python 3.10+ and the required dependencies installed:
@@ -82,6 +93,17 @@ The `genetic_algorithm` function accepts any `FitnessFunction` and an optional `
 
 ---
 
+## Academic Integrity Notice
+
+This repository is provided for reference and discussion only.
+
+Copying or submitting this code, in whole or in part, for coursework,
+assignments, or academic evaluation is prohibited.
+
+Please implement your own solution instead.
+
+---
+
 ## 3. Reflection
 
 Both implementations solve the same problems using the same parameters and produce comparable results, but the experience of writing them felt quite different.
@@ -91,3 +113,17 @@ The OOP approach made the code easy to navigate. Each class has a single job, an
 The FP approach was more concise. Representing chromosomes as tuples and relying on `map`/`reduce` kept individual functions short and easy to reason about in isolation. Because nothing is mutated in place, bugs related to shared state simply cannot happen. The tradeoff is that threading `rng` through every function signature adds noise, and deeply nested `reduce` lambdas can become hard to read quickly.
 
 In terms of correctness, both paradigms performed equally well - the GA converged reliably on OneMax and produced valid, high-value solutions for Knapsack. For a project like this, where the algorithm is fixed and the components are well-defined, OOP offers better long-term maintainability while FP offers better testability and fewer hidden dependencies. A hybrid approach - using dataclasses for structured data and pure functions for logic - would likely combine the best of both worlds.
+
+---
+
+## Acknowledgments
+
+Some implementation ideas were inspired by publicly available
+educational resources and tutorials about Genetic Algorithms.
+
+AI-assisted tools were used during development for debugging,
+refactoring suggestions, and code improvement.
+
+The final implementation, structure, and modifications were written
+and adapted by the author.
+© 2026 Luong Hoang Vinh Tien

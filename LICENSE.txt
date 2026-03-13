@@ -1,0 +1,15 @@
+Copyright (c) 2026 Luong Hoang Vinh Tien
+
+All rights reserved.
+
+This source code is the intellectual property of Luong Hoang Vinh Tien.
+
+This repository is made publicly available for educational purposes,
+discussion, and code review.
+
+You are allowed to view and study the code.
+
+However, copying, modifying, redistributing, or submitting this code,
+in whole or in part, for academic coursework, assignments, or
+evaluations is strictly prohibited without explicit permission from
+the author.
