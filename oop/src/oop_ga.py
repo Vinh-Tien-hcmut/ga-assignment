@@ -362,7 +362,7 @@ class GeneticAlgorithm:
 # ==============================
 def generate_inventory(length: int, rng: random.Random) -> Tuple[Inventory, int]:
     inventory = tuple(
-        Item("Item " + str(i + 1), rng.randint(1, 10 ** 9), rng.randint(1, 10 ** 9))
+        Item("Item " + str(i + 1), rng.randint(10, 100), rng.randint(5, 50))
         for i in range(length)
     )
     capacity = int(0.4 * sum(item.weight for item in inventory))

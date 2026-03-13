@@ -37,7 +37,7 @@ def generate_chromosome(length: int, rng: random.Random) -> Chromosome:
 
 # Generate items
 def generate_inventory(length: int, rng: random.Random) -> Tuple [Inventory, int]:
-    inventory = tuple(Item("Item " + str(i + 1), rng.randint(1, 10 ** 9), rng.randint (1, 10 ** 9)) for i in range (0, length))
+    inventory = tuple(Item("Item " + str(i + 1), rng.randint(10, 100), rng.randint (5, 50)) for i in range (0, length))
     capacity = int(0.4 * reduce(lambda acc, cur: acc + cur.weight, inventory, 0))
     return inventory, capacity
 
