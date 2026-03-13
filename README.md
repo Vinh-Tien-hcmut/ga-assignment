@@ -139,7 +139,7 @@ In terms of correctness, both paradigms performed equally well - the GA converge
 ---
 
 ## Project Structure
-
+```text
 ga-assignment/
 │
 ├── README.md
@@ -165,7 +165,7 @@ ga-assignment/
     ├── knapsack_curve.png
     ├── results_oop.json
     └── results_fp.json
-
+'''
 ## Acknowledgments
 
 Some implementation ideas were inspired by publicly available
