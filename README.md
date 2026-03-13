@@ -165,7 +165,7 @@ ga-assignment/
     ├── knapsack_curve.png
     ├── results_oop.json
     └── results_fp.json
-'''
+```
 ## Acknowledgments
 
 Some implementation ideas were inspired by publicly available
