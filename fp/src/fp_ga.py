@@ -8,6 +8,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from collections import namedtuple
 import json
+import tracemalloc
 
 # ==============================
 # Configuration
@@ -86,48 +87,55 @@ def mutation(chromosome: Chromosome, rng: random.Random) -> Chromosome:
 
 def genetic_algorithm(fitness_function: FitnessFunction, rng: random.Random, target_fitness: int = None, verbose: bool = True):
     population = generate_population(POPULATION_SIZE, GENOME_LENGTH, rng)
-    history = ()
 
-    for generation in range(GENERATIONS):
+    def step(acc, generation):
+        population, history, converged = acc
+        if converged:
+            return acc
+
         fitness_values = tuple(map(fitness_function, population))
         scored = tuple(zip(population, fitness_values))
 
         elites = tuple(
-            map(lambda x: x [0],
+            map(lambda x: x[0],
                 sorted(scored, key=lambda x: x[1], reverse=True)[:ELITISM_SIZE])
         )
 
-        new_population = elites
         remaining = POPULATION_SIZE - ELITISM_SIZE
-
-        for _ in range(remaining // 2):
-            parent1 = select_parent(population, fitness_function, rng)
-            parent2 = select_parent(population, fitness_function, rng)
-
-            offspring1, offspring2 = crossover_function(parent1, parent2, rng)
-
-            new_population = new_population + (
-                mutation(offspring1, rng),
-                mutation(offspring2, rng)
+        pairs = [
+            crossover_function(
+                select_parent(population, fitness_function, rng),
+                select_parent(population, fitness_function, rng),
+                rng
             )
+            for _ in range(remaining // 2)
+        ]
 
-        population = new_population
+        new_population = elites + tuple(
+            mutation(offspring, rng)
+            for pair in pairs
+            for offspring in pair
+        )
 
-        fitness_values = tuple(map(fitness_function, population))
+        fitness_values = tuple(map(fitness_function, new_population))
         best_fitness = max(fitness_values)
-
-        history = history + (best_fitness,)
+        new_history = history + (best_fitness,)
 
         if verbose:
             print(f"Generation {generation:>3}: Best fitness = {best_fitness:>15,}")
         if target_fitness is not None and best_fitness >= target_fitness:
-            if verbose: 
+            if verbose:
                 print(f"Converged at generation {generation}!")
-            break
+            return new_population, new_history, True
 
+        return new_population, new_history, False
+
+    population, history, _ = reduce(step, range(GENERATIONS), (population, (), False))
+
+    fitness_values = tuple(map(fitness_function, population))
     best_fitness = max(fitness_values)
     best_index = fitness_values.index(best_fitness)
-    best_chromosome = population[best_index]                                         
+    best_chromosome = population[best_index]
     best_solution_bit_string = reduce(lambda acc, cur: acc + str(cur), best_chromosome, "")
     return best_solution_bit_string, best_fitness, history, best_chromosome
 
@@ -142,20 +150,24 @@ def main():
     print(f"{'ONEMAX':^45}")
     print(f"{'=' * 45}")
 
+    tracemalloc.start()
     start = time.time()
     best_solution_bit_string_onemax, best_fitness_onemax, history_onemax, _ = genetic_algorithm(fitness_function_onemax, rng, GENOME_LENGTH)
     end = time.time()
+    _, peak_onemax = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
     runtime_onemax = end - start
 
     print(f"Best solution: {best_solution_bit_string_onemax}")
     print(f"Final best fitness: {best_fitness_onemax}")
     print(f"Runtime: {runtime_onemax:.4f}s")
+    print(f"Peak memory: {peak_onemax / 1024:.1f} KB")
 
     plt.clf()
     plt.plot(history_onemax)
     plt.xlabel("Generation")
     plt.ylabel("Best Fitness")
-    plt.title("Genetic Algorithm - OneMax (FP)")
+    plt.title(f"Genetic Algorithm - OneMax (FP)\nRuntime: {runtime_onemax:.4f}s | Peak memory: {peak_onemax / 1024:.1f} KB")
     report_path = Path(__file__).resolve().parents[2] / "reports" / "onemax_curve.png"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(report_path)
@@ -169,34 +181,38 @@ def main():
     print(f"{'=' * 45}")
 
     inventory, capacity = generate_inventory(GENOME_LENGTH, rng)
+
+    tracemalloc.start()
     start = time.time()
     best_solution_bit_string_knapsack, best_fitness_knapsack, history_knapsack, best_chromosome_knapsack = genetic_algorithm(fitness_function_knapsack(inventory, capacity), rng)
     end = time.time()
+    _, peak_knapsack = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
     runtime_knapsack = end - start
-    # Print out selected items
+
     selected_items = tuple(item for bit, item in zip(best_chromosome_knapsack, inventory) if bit == 1)
     total_value = reduce(lambda acc, item: acc + item.value, selected_items, 0)
     total_weight = reduce(lambda acc, item: acc + item.weight, selected_items, 0)
-    # Header
+
     print(f"\n{'The best combination':=^60}")
     print(f"{'Name':<12} {'Value':>15} {'Weight':>15}")
     print("-" * 60)
-
-    # Rows
     for item in selected_items:
         print(f"{item.name:<12} {item.value:>15,} {item.weight:>15,}")
     print(f"Best solution: {best_solution_bit_string_knapsack}")
     print(f"Final best fitness: {best_fitness_knapsack:>15,}")
     print(f"Runtime: {runtime_knapsack:.4f}s")
+    print(f"Peak memory: {peak_knapsack / 1024:.1f} KB")
     print(f"{'Total value: ':<12} {total_value:>15,}")
     print(f"{'Total weight:':<12} {total_weight:>15,}")
     print(f"{'Capacity:    ':<12} {capacity:>15,}")
     print(f"{'Items chosen:':<12} {len(selected_items):>15}")
+
     plt.clf()
     plt.plot(history_knapsack)
     plt.xlabel("Generation")
     plt.ylabel("Best Fitness")
-    plt.title("Genetic Algorithm - Knapsack (FP)")
+    plt.title(f"Genetic Algorithm - Knapsack (FP)\nRuntime: {runtime_knapsack:.4f}s | Peak memory: {peak_knapsack / 1024:.1f} KB")
     report_path = Path(__file__).resolve().parents[2] / "reports" / "knapsack_curve.png"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(report_path)
@@ -213,12 +229,14 @@ def main():
                 "best_fitness": best_fitness_onemax,
                 "best_solution": best_solution_bit_string_onemax,
                 "runtime": runtime_onemax,
+                "peak_memory_kb": peak_onemax / 1024,
                 "history": list(history_onemax)
             },
             "Knapsack": {
                 "best_fitness": best_fitness_knapsack,
                 "best_solution": best_solution_bit_string_knapsack,
                 "runtime": runtime_knapsack,
+                "peak_memory_kb": peak_knapsack / 1024,
                 "history": list(history_knapsack),
                 "selected_items": [
                     {"name": i.name, "value": i.value, "weight": i.weight}

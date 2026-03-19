@@ -16,12 +16,12 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 fig.suptitle("Genetic Algorithm - OneMax", fontsize=14)
 
 ax1.plot(oop["OneMax"]["history"])
-ax1.set_title("OOP")
+ax1.set_title(f"OOP | Runtime: {oop['OneMax']['runtime']:.4f}s | Peak memory: {oop['OneMax']['peak_memory_kb']:.1f} KB")
 ax1.set_xlabel("Generation")
 ax1.set_ylabel("Best Fitness")
 
 ax2.plot(fp["OneMax"]["history"])
-ax2.set_title("FP")
+ax2.set_title(f"FP | Runtime: {fp['OneMax']['runtime']:.4f}s | Peak memory: {fp['OneMax']['peak_memory_kb']:.1f} KB")
 ax2.set_xlabel("Generation")
 ax2.set_ylabel("Best Fitness")
 
@@ -36,12 +36,12 @@ fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 fig.suptitle("Genetic Algorithm - Knapsack", fontsize=14)
 
 ax1.plot(oop["Knapsack"]["history"])
-ax1.set_title("OOP")
+ax1.set_title(f"OOP | Runtime: {oop['Knapsack']['runtime']:.4f}s | Peak memory: {oop['Knapsack']['peak_memory_kb']:.1f} KB")
 ax1.set_xlabel("Generation")
 ax1.set_ylabel("Best Fitness")
 
 ax2.plot(fp["Knapsack"]["history"])
-ax2.set_title("FP")
+ax2.set_title(f"FP | Runtime: {fp['Knapsack']['runtime']:.4f}s | Peak memory: {fp['Knapsack']['peak_memory_kb']:.1f} KB")
 ax2.set_xlabel("Generation")
 ax2.set_ylabel("Best Fitness")
 

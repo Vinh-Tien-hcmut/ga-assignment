@@ -9,6 +9,7 @@ from functools import reduce
 from pathlib import Path
 import matplotlib.pyplot as plt
 import json
+import tracemalloc
 
 # ==============================
 # Configuration
@@ -383,24 +384,29 @@ def main():
     print(f"{'=' * 45}")
 
     ga_onemax = GeneticAlgorithm(
-        fitness_function      = OneMaxFitness(),
-        selection       = TournamentSelection(k=TOURNAMENT_K, rng=rng),
-        crossover       = OnePointCrossover(crossover_rate=CROSSOVER_RATE, rng=rng),
-        mutation        = BitFlipMutation(mutation_rate=MUTATION_RATE, rng=rng),
-        target_fitness  = GENOME_LENGTH,
-        rng             = rng,
+        fitness_function = OneMaxFitness(),
+        selection        = TournamentSelection(k=TOURNAMENT_K, rng=rng),
+        crossover        = OnePointCrossover(crossover_rate=CROSSOVER_RATE, rng=rng),
+        mutation         = BitFlipMutation(mutation_rate=MUTATION_RATE, rng=rng),
+        target_fitness   = GENOME_LENGTH,
+        rng              = rng,
     )
+
+    tracemalloc.start()
     result_onemax = ga_onemax.run()
+    _, peak_onemax = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
 
     print(f"\nBest solution : {result_onemax.best_solution}")
     print(f"Best fitness  : {result_onemax.best_fitness}")
     print(f"Runtime       : {result_onemax.runtime:.4f}s")
+    print(f"Peak memory   : {peak_onemax / 1024:.1f} KB")
 
     plt.clf()
     plt.plot(result_onemax.history)
     plt.xlabel("Generation")
     plt.ylabel("Best Fitness")
-    plt.title("Genetic Algorithm - OneMax (OOP)")
+    plt.title(f"Genetic Algorithm - OneMax (OOP)\nRuntime: {result_onemax.runtime:.4f}s | Peak memory: {peak_onemax / 1024:.1f} KB")
     report_path = Path(__file__).resolve().parents[2] / "reports" / "onemax_curve.png"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(report_path)
@@ -417,13 +423,16 @@ def main():
 
     ga_knapsack = GeneticAlgorithm(
         fitness_function = KnapsackFitness(inventory, capacity),
-        selection  = TournamentSelection(k=TOURNAMENT_K, rng=rng),
-        crossover  = OnePointCrossover(crossover_rate=CROSSOVER_RATE, rng=rng),
-        mutation   = BitFlipMutation(mutation_rate=MUTATION_RATE, rng=rng),
-        rng        = rng,
+        selection        = TournamentSelection(k=TOURNAMENT_K, rng=rng),
+        crossover        = OnePointCrossover(crossover_rate=CROSSOVER_RATE, rng=rng),
+        mutation         = BitFlipMutation(mutation_rate=MUTATION_RATE, rng=rng),
+        rng              = rng,
     )
 
+    tracemalloc.start()
     result_knapsack = ga_knapsack.run()
+    _, peak_knapsack = tracemalloc.get_traced_memory()
+    tracemalloc.stop()
 
     selected_items = [
         item for bit, item in zip(result_knapsack.best_genome, inventory) if bit == 1
@@ -444,12 +453,13 @@ def main():
     print(f"\nBest solution : {result_knapsack.best_solution}")
     print(f"Best fitness  : {result_knapsack.best_fitness:,}")
     print(f"Runtime       : {result_knapsack.runtime:.4f}s")
+    print(f"Peak memory   : {peak_knapsack / 1024:.1f} KB")
 
     plt.clf()
     plt.plot(result_knapsack.history)
     plt.xlabel("Generation")
     plt.ylabel("Best Fitness")
-    plt.title("Genetic Algorithm - Knapsack (OOP)")
+    plt.title(f"Genetic Algorithm - Knapsack (OOP)\nRuntime: {result_knapsack.runtime:.4f}s | Peak memory: {peak_knapsack / 1024:.1f} KB")
     report_path = Path(__file__).resolve().parents[2] / "reports" / "knapsack_curve.png"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(report_path)
@@ -466,6 +476,7 @@ def main():
                 "best_fitness": result_onemax.best_fitness,
                 "best_solution": result_onemax.best_solution,
                 "runtime": result_onemax.runtime,
+                "peak_memory_kb": peak_onemax / 1024,
                 "history": result_onemax.history,
             },
             "Knapsack": {
@@ -473,6 +484,7 @@ def main():
                 "best_solution": result_knapsack.best_solution,
                 "runtime": result_knapsack.runtime,
                 "history": result_knapsack.history,
+                "peak_memory_kb": peak_knapsack / 1024,
                 "selected_items": [
                     {"name": i.name, "value": i.value, "weight": i.weight}
                     for i in selected_items
