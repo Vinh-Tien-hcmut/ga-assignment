@@ -7,7 +7,6 @@
 
 **Name:** Luong Hoang Vinh Tien  
 **Student ID:** 2413477
-
 **Source code:** https://github.com/Vinh-Tien-hcmut/ga-assignment
 ---
 
