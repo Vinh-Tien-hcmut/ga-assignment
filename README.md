@@ -6,7 +6,7 @@
 ![Knapsack](reports/knapsack_curve.png)
 
 **Name:** Luong Hoang Vinh Tien  
-**Student ID:** 2413477
+**Student ID:** 2413477 
 **Source code:** https://github.com/Vinh-Tien-hcmut/ga-assignment
 ---
 
